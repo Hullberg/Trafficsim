@@ -4,7 +4,11 @@
  * bornTime - time of entry, dest - where it is heading. <br>
  * bornTime represents when a car enters the street, dest represents if it is going straight ahead (=1) or turning left (=2)
  */
-
+/**
+ * @brief [Car-class]
+ * @details [Everything needed for a car entering the traffic system. Destination where it is going, and when it enters.]
+ * 
+ */
 public class Car {
 
 	/// bornTime represents when the car enters the lane.
