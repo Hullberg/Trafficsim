@@ -1,8 +1,9 @@
+
 /**
  * @brief [A car lane with slots for cars to drive in, and green or red lights.]
  * @details []
- * 
  */
+
 public class Lane {
 /**
  * @brief [To prevent errors, if unable to put a new car into the lane]
@@ -12,7 +13,6 @@ public class Lane {
     public static class OverflowException extends RuntimeException {
         // Undantag som kastas när det inte gick att lägga 
         // in en ny bil på vägen
-
     }
 
     private Car[] theLane;
@@ -30,6 +30,14 @@ public class Lane {
         theLane = new Car[n];
     }
 
+    public Car getCar(int n) {
+        return this.theLane[n];
+    }
+
+    public int getLength() {
+        return theLane.length;
+    }
+
 /**
  * @brief [Moves all cars in the lane one step ahead, if possible.]
  * @details []
@@ -39,16 +47,12 @@ public class Lane {
         // (om det går). (Fordonet på plats 0 tas bort utifrån 
 	// mm h a metoden nedan.)
         for (int i = 0; i < theLane.length; ++i) {
-            if (theLane[i] != null) {
+            if (theLane[i] == null) {
                 theLane[i] = theLane[i+1];
+                theLane[i+1] = null;
             }
         }
     }
-
-/*
-   - [R] <  --  --  --  --  --  --  --   <  --  --  --  --  --  --  --  --  --  [COCHE]  -
-   - [R] <  [COCHE]  -  -  -  -  -  -  
-*/
 
 /**
  * @brief [Removes the first car from the lane and removes it.]
@@ -97,7 +101,7 @@ public class Lane {
         }
         // else throw OverflowException;
         else {
-            throw new OverflowException;
+            throw new OverflowException();
         }
     }
 
@@ -107,13 +111,13 @@ public class Lane {
  * @return [A graphic representation of the lane.]
  */
     public String toString() {
-        String output = "<";
+        String output = "";
         for (int i = 0; i < theLane.length; ++i) {
             if (theLane[i] != null) {
-                output = output + " " + theLane[i].toString() + " ";
+                output = output + "   " + theLane[i].toString() + "   ";
             }
             else {
-                output = output + " -- ";
+                output = output + "   ----   ";
             }
         }
         return output;
