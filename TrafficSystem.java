@@ -1,5 +1,7 @@
 import java.util.Scanner;
 import java.util.Random;
+import java.util.*;
+
 /**
  * @brief [Creates the traffic system.]
  * @details [The traffic system contains a lot of information, how long the lanes are and the lights positioned at the end.
@@ -34,17 +36,13 @@ public class TrafficSystem {
  * @details [length1 is for lane r0, length 2 is for lanes r1 and r2. Period and time works for both lights s1 and s2.]
  * @return [Creates a new traffic system.]
  */
-    public TrafficSystem(int length1, int length2, int period, int green, int _arrivalIntensity) {
+    public TrafficSystem(int length1, int length2, int period, int green) {
     	//...
-
         this.r0 = new Lane(length1);
         this.r1 = new Lane(length2);
         this.r2 = new Lane(length2);
         this.s1 = new Light(period, green);
         this.s2 = new Light(period, green);
-
-        this.arrivalIntensity = _arrivalIntensity;
-
     	}
 
 /**
@@ -57,7 +55,6 @@ public class TrafficSystem {
         this.r2 = r2;
         this.s1 = s1;
         this.s2 = s2;
-        this.arrivalIntensity = arrivalIntensity;
     }
 
 /**
@@ -98,7 +95,7 @@ public class TrafficSystem {
 
 
         // Checks if a new car should enter the traffic system, with a randomized destination.
-        if (r0.lastFree() && ((this.time % arrivalIntensity) == 0)) {
+        if (r0.lastFree() && ((randomized.nextInt(2) + 1) == 1)) {
             Car c = new Car(this.time, (randomized.nextInt(2) + 1));
             r0.putLast(c);
             this.carsEntered++;
@@ -146,8 +143,8 @@ public class TrafficSystem {
  * @details []
  */
     public void print() {
-        System.out.println(s1.toString() + "\t" + r1.toString() + "\t" + r0.toString() + "\n" 
-            + s2.toString() + "\t" + r2.toString() + "\n\n");
+        System.out.println(" <-- " + s1.toString() + r1.toString() + "\t" + r0.toString() + "\n" 
+            + " <-- " + s2.toString() + r2.toString() + "\n\n");
     }
 
 
@@ -166,11 +163,7 @@ public class TrafficSystem {
         System.out.println("Enter the duration of how long the lights should stay green, should be lower than previous input:");
         int green = sc.nextInt();
 
-        System.out.println("Later we will randomize when the cars come, but for now:");
-        System.out.println("Enter the arrival intensity of new cars into the system:");
-        int arrivalIntensity = sc.nextInt();
-
-        TrafficSystem ts = new TrafficSystem(length1, length2, period, green, arrivalIntensity);
+        TrafficSystem ts = new TrafficSystem(length1, length2, period, green);
 
         System.out.println("Enter how long you wish to watch the simulation:");
         int duration = sc.nextInt();
@@ -179,6 +172,12 @@ public class TrafficSystem {
         ts.print();
         
         for (int i = 0; i < duration; ++i) {
+            try {
+                Thread.sleep(450);                 
+            } 
+            catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            }
             ts.print();
             ts.step();
         }
