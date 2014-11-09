@@ -1,4 +1,5 @@
-
+import java.util.Scanner;
+import java.util.Random;
 /**
  * @brief [Creates the traffic system.]
  * @details [The traffic system contains a lot of information, how long the lanes are and the lights positioned at the end.
@@ -8,9 +9,9 @@
 
 public class TrafficSystem {
 
-    public Lane  r0; // The one where all cars enter
-    public Lane  r1; // The one going straight ahead in the intersection
-    public Lane  r2; // The one going left at the intersection
+    private Lane  r0; // The one where all cars enter
+    private Lane  r1; // The one going straight ahead in the intersection
+    private Lane  r2; // The one going left at the intersection
     private Light s1; // The light for lane r1
     private Light s2; // The light for lane r2
 
@@ -18,25 +19,31 @@ public class TrafficSystem {
     public int arrivalIntensity;
     public int destinations;
 
-    ///....    
+    Random randomized = new Random();
+
+    // Statistics:
+    private int carsEntered = 0;
+    private int carsWentLeft = 0;
+    private int carsWentStraight = 0;
+    private int carsExited = 0;
     
-    public int time = 0;
+    private int time = 0;
 
 /**
  * @brief [Creates a new traffic system, with all required parameters]
  * @details [length1 is for lane r0, length 2 is for lanes r1 and r2. Period and time works for both lights s1 and s2.]
  * @return [Creates a new traffic system.]
  */
-    public TrafficSystem(int length1, int length2, int period, int _arrivalIntensity) {
+    public TrafficSystem(int length1, int length2, int period, int green, int _arrivalIntensity) {
     	//...
 
-        Lane r0 = new Lane(length1);
-        Lane r1 = new Lane(length2);
-        Lane r2 = new Lane(length2);
-        Light s1 = new Light(period, time);
-        Light s2 = new Light(period, time);
+        this.r0 = new Lane(length1);
+        this.r1 = new Lane(length2);
+        this.r2 = new Lane(length2);
+        this.s1 = new Light(period, green);
+        this.s2 = new Light(period, green);
 
-        arrivalIntensity = _arrivalIntensity;
+        this.arrivalIntensity = _arrivalIntensity;
 
     	}
 
@@ -51,7 +58,6 @@ public class TrafficSystem {
         this.s1 = s1;
         this.s2 = s2;
         this.arrivalIntensity = arrivalIntensity;
-
     }
 
 /**
@@ -59,38 +65,67 @@ public class TrafficSystem {
  * @details [Checks if the lights should turn green, and if the cars can move ahead or not.]
  */
     public void step() {
-        time += 1;
-
-        if (s1.isGreen()) {
+        // Looks at the top lane if the light is green, and if there is a car waiting for the light.
+        if (s1.isGreen() && (r1.firstCar() != null)) {
             r1.getFirst();
-            r1.step();
+            this.carsExited++;
         }
-        else { 
-            r1.step();
-        }
+        r1.step();
 
-        if (s2.isGreen()) {
+
+        // Looks at the bottom lane if the light is green, and if there is a car waiting for the light.
+        if (s2.isGreen() && (r2.firstCar() != null)) {
             r2.getFirst();
-            r2.step();
+            this.carsExited++;
         }
-        else {
-           r2.step();
-        }
+        r2.step();
+
 
         // Cars going straight where the road splits into two roads
-        if ((r0.firstCar().getDest() == 1) && r1.lastFree()) {
+        if ((r0.firstCar() != null) && (r0.firstCar().getDest() == 1) && r1.lastFree()) {
             r1.putLast(r0.firstCar());
-            r0.step();
+            r0.getFirst();
+            this.carsWentLeft++;
         }
 
         // Cars turning left at the roadsplit.
-        else if ((r0.firstCar().getDest() == 2) && r2.lastFree()) {
+        else if ((r0.firstCar() != null) && (r0.firstCar().getDest() == 2) && r2.lastFree()) {
             r2.putLast(r0.firstCar());
-            r0.step();
+            r0.getFirst();
+            this.carsWentStraight++;
         }
-        else {
-            r0.step();
+        r0.step();
+
+
+        // Checks if a new car should enter the traffic system, with a randomized destination.
+        if (r0.lastFree() && ((this.time % arrivalIntensity) == 0)) {
+            Car c = new Car(this.time, (randomized.nextInt(2) + 1));
+            r0.putLast(c);
+            this.carsEntered++;
         }
+
+
+        s1.step();
+        s2.step();
+
+        this.time++;
+    }
+
+
+    public int getCarsEntered() {
+        return this.carsEntered;
+    }
+
+    public int getCarsWentLeft() {
+        return this.carsWentLeft;
+    }
+
+    public int getCarsWentStraight() {
+        return this.carsWentStraight;
+    }
+
+    public int getCarsExited() {
+        return this.carsExited;
     }
 
 /**
@@ -99,18 +134,56 @@ public class TrafficSystem {
  */
     public void printStatistics() {
 	// Skriv statistiken samlad
-
+        System.out.println("Cars that entered the TrafficSystem: " + this.getCarsEntered() + "\n"
+                        + "Cars that turned left: " + this.getCarsWentLeft() + "\n"
+                        + "Cars that went straight: " + this.getCarsWentStraight() + "\n"
+                        + "Cars that exited the TrafficSystem: " + this.getCarsExited());
     }
 
 /**
  * @brief [Prints out something that could possibly be interpreted as a graphic description of the traffic system,
  *  if you have enough imagination.]
- * @details [[G]   ----      ----      ----      [COCHE]      ----          ----      ----      ----      ----
- *           [R]   ----      [COCHE]      ----      ----      ----      ]
+ * @details []
  */
     public void print() {
-        System.out.println("" + s1.toString() + "\t" + r1.toString() + "\t" + r0.toString() 
-            + "\n" + "" + s2.toString() + "\t" + r2.toString() + "\n\n");
+        System.out.println(s1.toString() + "\t" + r1.toString() + "\t" + r0.toString() + "\n" 
+            + s2.toString() + "\t" + r2.toString() + "\n\n");
+    }
+
+
+    public static void main(String [] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter the length of the entrance-lane:");
+        int length1 = sc.nextInt();
+
+        System.out.println("Enter the length of the turning lanes:");
+        int length2 = sc.nextInt();
+
+        System.out.println("Enter the duration of a period.");
+        int period = sc.nextInt();
+
+        System.out.println("Enter the duration of how long the lights should stay green, should be lower than previous input:");
+        int green = sc.nextInt();
+
+        System.out.println("Later we will randomize when the cars come, but for now:");
+        System.out.println("Enter the arrival intensity of new cars into the system:");
+        int arrivalIntensity = sc.nextInt();
+
+        TrafficSystem ts = new TrafficSystem(length1, length2, period, green, arrivalIntensity);
+
+        System.out.println("Enter how long you wish to watch the simulation:");
+        int duration = sc.nextInt();
+
+        
+        ts.print();
+        
+        for (int i = 0; i < duration; ++i) {
+            ts.print();
+            ts.step();
+        }
+        ts.printStatistics();
+
     }
 
 }

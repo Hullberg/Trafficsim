@@ -1,4 +1,4 @@
-
+import java.util.Scanner;
 /**
  * <h1>Class Light!</h1>
  * 
@@ -12,7 +12,7 @@
  */
 
 public class Light {
-    private int period;
+    private int period; // Time-duration before it resets. (green < period)
     private int time;  // Intern klocka: 0, 1, ... period-1, 0, 1 ...
     private int green; // Signalen grön när time<green 
 
@@ -37,10 +37,12 @@ public class Light {
  * @details []
  */
     public void step() { 
-        time += 1;
+        if (this.time < this.period - 1) { 
+            this.time++;
+        }
+        else this.time = 0;
        // Stegar fram klocka ett steg
     }
-
 
 /**
  * @brief [Checks if time < green, if so the method returns true.]
@@ -48,11 +50,10 @@ public class Light {
  * @return [True or false depending on the value of time and green.]
  */
     public boolean isGreen()   {
-        if(time < this.green) return true;
+        if (time < this.green)  return true;
         else return false;
 	// Returnerar true om time<green, annars false
     }
-
 
 /**
 * @brief [Prints out the light in a string.]
@@ -66,5 +67,27 @@ public class Light {
         else {
             return "[R]";
         }
-    }	
+    }
+     	
+
+    public static void main(String [] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter how long it stay turn green:");
+        int green = sc.nextInt();
+
+        System.out.println("Enter how long the periods should be: ");
+        int period = sc.nextInt();
+
+        Light l1 = new Light(period, green);
+
+        System.out.println("Choose an amount of time the programme should run.");
+        int duration = sc.nextInt();
+
+        for (int i = 0; i < duration; ++i) {
+        System.out.println(l1.toString());
+        l1.step();
+        }
+
+    }
 }   

@@ -1,4 +1,4 @@
-
+import java.util.Scanner;
 /**
  * <h1>Traffic simsumsilatsor!</h1>
  * 
@@ -63,4 +63,24 @@ public class Car {
     public String toString() {
     	return "[COCHE]";
     }
+
+
+    public static void main(String [] args) {
+    	Scanner sc = new Scanner(System.in);
+    	System.out.println("Choose a destination for the car, 1 for ahead, 2 for left turn.");
+    	int dest = sc.nextInt();
+    	System.out.println("Enter a bornTime.");
+    	int bornTime = sc.nextInt();
+
+    	Car c = new Car(bornTime, dest);
+
+    	System.out.println("bornTime: " + c.getBornTime());
+    	System.out.println("Destination: " + c.getDest());
+    	System.out.println(c.toString());
+    }
+
+
 }
+
+
+

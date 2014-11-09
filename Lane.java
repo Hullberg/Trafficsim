@@ -1,4 +1,4 @@
-
+import java.util.Scanner;
 /**
  * @brief [A car lane with slots for cars to drive in, and green or red lights.]
  * @details []
@@ -46,7 +46,7 @@ public class Lane {
 	// Stega fram alla fordon (utom det på plats 0) ett steg 
         // (om det går). (Fordonet på plats 0 tas bort utifrån 
 	// mm h a metoden nedan.)
-        for (int i = 0; i < theLane.length; ++i) {
+        for (int i = 0; i < theLane.length -1; ++i) {
             if (theLane[i] == null) {
                 theLane[i] = theLane[i+1];
                 theLane[i+1] = null;
@@ -117,10 +117,38 @@ public class Lane {
                 output = output + "   " + theLane[i].toString() + "   ";
             }
             else {
-                output = output + "   ----   ";
+                output = output + "    -----    ";
             }
         }
         return output;
+    }
+
+    public static void main(String [] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter the length of a lane:");
+        int length = sc.nextInt();
+        Lane l1 = new Lane(length);
+
+        Car c = new Car(2,1);
+        l1.putLast(c);
+
+        System.out.println("Enter how long you want to watch it:");
+        int duration = sc.nextInt();
+
+        System.out.println("Enter the arrival intensity of cars entering the lane:");
+        int newCar = sc.nextInt();
+        for (int i = 1; i <= duration; ++i) {
+            System.out.println(l1.toString());
+            l1.step();
+            if ((i % newCar) == 0) {
+                l1.putLast(c);
+            }
+            ;
+
+        }
+        //l1.getFirst();
+        //System.out.println(l1.toString());
     }
 
 }
