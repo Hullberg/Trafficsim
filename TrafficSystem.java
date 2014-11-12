@@ -28,6 +28,10 @@ public class TrafficSystem {
     private int carsWentLeft = 0;
     private int carsWentStraight = 0;
     private int carsExited = 0;
+
+    private int totalTime = 0;
+    private int fastestTime = 999;
+    private int slowestTime = 0;
     
     private int time = 0;
 
@@ -36,13 +40,14 @@ public class TrafficSystem {
  * @details [length1 is for lane r0, length 2 is for lanes r1 and r2. Period and time works for both lights s1 and s2.]
  * @return [Creates a new traffic system.]
  */
-    public TrafficSystem(int length1, int length2, int period, int green) {
+    public TrafficSystem(int length1, int length2, int period, int green, int arrivalIntensity) {
     	//...
         this.r0 = new Lane(length1);
         this.r1 = new Lane(length2);
         this.r2 = new Lane(length2);
         this.s1 = new Light(period, green);
         this.s2 = new Light(period, green);
+        this.arrivalIntensity = arrivalIntensity;
     	}
 
 /**
@@ -64,6 +69,13 @@ public class TrafficSystem {
     public void step() {
         // Looks at the top lane if the light is green, and if there is a car waiting for the light.
         if (s1.isGreen() && (r1.firstCar() != null)) {
+            if (this.time - r1.firstCar().getBornTime() < this.fastestTime) {
+                fastestTime = this.time - r1.firstCar().getBornTime();
+            }
+            else if (this.time - r1.firstCar().getBornTime() > this.slowestTime) {
+                slowestTime = this.time - r1.firstCar().getBornTime();
+            }
+            totalTime += this.time - r1.firstCar().getBornTime();
             r1.getFirst();
             this.carsExited++;
             this.carsWentStraight++;
@@ -73,6 +85,13 @@ public class TrafficSystem {
 
         // Looks at the bottom lane if the light is green, and if there is a car waiting for the light.
         if (s2.isGreen() && (r2.firstCar() != null)) {
+            if (this.time - r2.firstCar().getBornTime() < this.fastestTime) {
+                fastestTime = this.time - r2.firstCar().getBornTime();
+            }
+            else if (this.time - r2.firstCar().getBornTime() > this.slowestTime) {
+                slowestTime = this.time - r2.firstCar().getBornTime();
+            }
+            totalTime += this.time - r2.firstCar().getBornTime();
             r2.getFirst();
             this.carsExited++;
             this.carsWentLeft++;
@@ -95,7 +114,7 @@ public class TrafficSystem {
 
 
         // Checks if a new car should enter the traffic system, with a randomized destination.
-        if (r0.lastFree() && ((randomized.nextInt(2) + 1) == 1)) {
+        if (r0.lastFree() && ((randomized.nextInt(arrivalIntensity) + 1) == 1)) {
             Car c = new Car(this.time, (randomized.nextInt(2) + 1));
             r0.putLast(c);
             this.carsEntered++;
@@ -125,6 +144,23 @@ public class TrafficSystem {
         return this.carsExited;
     }
 
+    public int getAverageTime() { 
+        if (this.carsExited != 0) {
+            return this.totalTime / this.carsExited;
+        }
+        else {
+        return 0;
+        }   
+    }
+
+    public int getFastestTime() {
+        return this.fastestTime;
+    }
+
+    public int getSlowestTime() {
+        return this.slowestTime;
+    }
+
 /**
  * @brief []
  * @details [Keeps tabs on how many cars that enter the traffic system, which destination they choose and how many that exit.]
@@ -132,9 +168,14 @@ public class TrafficSystem {
     public void printStatistics() {
 	// Skriv statistiken samlad
         System.out.println("Cars that entered the TrafficSystem: " + this.getCarsEntered() + "\n"
+                        + "The arrival intensity of the cars were: " + this.arrivalIntensity + "\n"
                         + "Cars that turned left: " + this.getCarsWentLeft() + "\n"
                         + "Cars that went straight: " + this.getCarsWentStraight() + "\n"
-                        + "Cars that exited the TrafficSystem: " + this.getCarsExited());
+                        + "Cars that exited the TrafficSystem: " + this.getCarsExited() + "\n"
+                        + "Average time for cars to go through the system: " + this.getAverageTime() + "\n"
+                        + "The fastest time a car went through the system was: " + this.getFastestTime() + "\n"
+                        + "The slowest time a car went through the system was: " + this.getSlowestTime() + "\n"
+                        + "The distance between where cars enter and exit the system is: " + (this.r1.getLength() + this.r0.getLength()) + "\n");
     }
 
 /**
@@ -164,7 +205,7 @@ public class TrafficSystem {
         System.out.println("Enter the duration of how long the lights should stay green, should be lower than previous input:");
         int green = sc.nextInt();
 
-        TrafficSystem ts = new TrafficSystem(length1, length2, period, green);
+        TrafficSystem ts = new TrafficSystem(length1, length2, period, green, 3);
 
         System.out.println("Enter how long you wish to watch the simulation:");
         int duration = sc.nextInt();

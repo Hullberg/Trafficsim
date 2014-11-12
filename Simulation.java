@@ -22,23 +22,25 @@ public class Simulation {
     	System.out.println("The length of the car lanes will be randomized, but the user will set the range.");
     	//System.out.println("Choose the minimum length of the lanes: ");
     	//int lengthmin = sc.nextInt();
-    	System.out.println("Choose the maximum length of the lanes (minimum is 3): ");
+    	System.out.println("Choose the maximum length of the lanes (minimum is 1): ");
 		int lengthmax = sc.nextInt();
 		System.out.println("Choose the period of the lights: ");
 		int period = sc.nextInt();
+		System.out.println("Choose the arrival intensity of the cars (3 means 1/3 chance for a car to enter) :");
+		int arrivalIntensity = sc.nextInt();
 		System.out.println("The destination, and arrival intensity, of the cars will be randomized.");
 		System.out.println("How long do you wish to watch the simulation?: ");
 		int duration = sc.nextInt();
 
-		int length1 = (randomized.nextInt(lengthmax) + 3);
-		int length2 = (randomized.nextInt(lengthmax) + 3);
+		int length1 = (randomized.nextInt(lengthmax) + 1);
+		int length2 = (randomized.nextInt(lengthmax) + 1);
 
-		TrafficSystem traffSys = new TrafficSystem(length1, length2, period, period/2);
+		TrafficSystem traffSys = new TrafficSystem(length1, length2, period, period/2, arrivalIntensity);
 
 		for (int i = 0; i < duration; ++i) {
 			traffSys.readParameters();
 			try {
-                Thread.sleep(500);                 
+                Thread.sleep(450);                 
             } 
             catch(InterruptedException ex) {
             	Thread.currentThread().interrupt();
