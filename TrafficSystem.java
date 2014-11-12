@@ -66,6 +66,7 @@ public class TrafficSystem {
         if (s1.isGreen() && (r1.firstCar() != null)) {
             r1.getFirst();
             this.carsExited++;
+            this.carsWentStraight++;
         }
         r1.step();
 
@@ -74,6 +75,7 @@ public class TrafficSystem {
         if (s2.isGreen() && (r2.firstCar() != null)) {
             r2.getFirst();
             this.carsExited++;
+            this.carsWentLeft++;
         }
         r2.step();
 
@@ -82,14 +84,12 @@ public class TrafficSystem {
         if ((r0.firstCar() != null) && (r0.firstCar().getDest() == 1) && r1.lastFree()) {
             r1.putLast(r0.firstCar());
             r0.getFirst();
-            this.carsWentLeft++;
         }
 
         // Cars turning left at the roadsplit.
         else if ((r0.firstCar() != null) && (r0.firstCar().getDest() == 2) && r2.lastFree()) {
             r2.putLast(r0.firstCar());
             r0.getFirst();
-            this.carsWentStraight++;
         }
         r0.step();
 
@@ -126,8 +126,8 @@ public class TrafficSystem {
     }
 
 /**
- * @brief [u w0t m8?]
- * @details [how about no]
+ * @brief []
+ * @details [Keeps tabs on how many cars that enter the traffic system, which destination they choose and how many that exit.]
  */
     public void printStatistics() {
 	// Skriv statistiken samlad
@@ -143,8 +143,9 @@ public class TrafficSystem {
  * @details []
  */
     public void print() {
-        System.out.println(" <-- " + s1.toString() + r1.toString() + "\t" + r0.toString() + "\n" 
-            + " <-- " + s2.toString() + r2.toString() + "\n\n");
+        System.out.println(this.time + "\n" + s1.toString() + r1.toString() + "  ---  " + r0.toString() + "Cars entered: " + this.carsEntered + "\n"
+        + s2.toString() + r2.toString() + "  __/  " + "\n"
+        + "Cars exited: " + this.carsExited + "\n\n");
     }
 
 
@@ -181,6 +182,7 @@ public class TrafficSystem {
             ts.print();
             ts.step();
         }
+        ts.print();
         ts.printStatistics();
 
     }

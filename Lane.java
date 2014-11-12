@@ -114,10 +114,10 @@ public class Lane {
         String output = "";
         for (int i = 0; i < theLane.length; ++i) {
             if (theLane[i] != null) {
-                output = output + "   " + theLane[i].toString() + "   ";
+                output = output + " " + theLane[i].toString() + " ";
             }
             else {
-                output = output + "    -----    ";
+                output = output + "  -----  ";
             }
         }
         return output;
