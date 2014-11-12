@@ -149,12 +149,17 @@ public class TrafficSystem {
             return this.totalTime / this.carsExited;
         }
         else {
-        return 0;
+            return 0;
         }   
     }
 
     public int getFastestTime() {
-        return this.fastestTime;
+        if (this.carsExited != 0) {
+            return this.fastestTime;
+        }
+        else {
+            return 0;
+        }
     }
 
     public int getSlowestTime() {
@@ -167,8 +172,8 @@ public class TrafficSystem {
  */
     public void printStatistics() {
 	// Skriv statistiken samlad
-        System.out.println("Cars that entered the TrafficSystem: " + this.getCarsEntered() + "\n"
-                        + "The arrival intensity of the cars were: " + this.arrivalIntensity + "\n"
+        if (this.getSlowestTime() != 0 && this.getFastestTime() != 0) {
+            System.out.println("Cars that entered the TrafficSystem: " + this.getCarsEntered() + "\n"
                         + "Cars that turned left: " + this.getCarsWentLeft() + "\n"
                         + "Cars that went straight: " + this.getCarsWentStraight() + "\n"
                         + "Cars that exited the TrafficSystem: " + this.getCarsExited() + "\n"
@@ -176,6 +181,10 @@ public class TrafficSystem {
                         + "The fastest time a car went through the system was: " + this.getFastestTime() + "\n"
                         + "The slowest time a car went through the system was: " + this.getSlowestTime() + "\n"
                         + "The distance between where cars enter and exit the system is: " + (this.r1.getLength() + this.r0.getLength()) + "\n");
+        }
+        else {
+            System.out.println("No cars exited the system.");
+        }
     }
 
 /**
